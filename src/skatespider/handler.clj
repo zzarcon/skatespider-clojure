@@ -1,11 +1,20 @@
 (ns skatespider.handler
-  (:use compojure.core
-        ring.middleware.json
-        ring.util.response)
-  (:require [compojure.route :as route]))
+  (:require [compojure.core :refer :all]
+            [compojure.route :as route]
+            [compojure.handler]
+            [ring.middleware.json]
+            [ring.util.response :refer :all]
+            [skatespider.ig-client :as ig]))
 
 (defroutes app-routes
-  (GET "/rest" [] (response {:foo "hector"}))
-  (route/resources "/"))
+  (GET "/" [foo bar] (str foo " " bar))
+  (GET "/auth" [] (redirect ig/auth-url))
+  (GET "/auth_callback" (str "code"))
+  (route/resources "/")
+  (route/not-found "<h1>Not found</h1>"))
 
-(def app (wrap-json-response app-routes))
+(def app
+  (-> app-routes
+      compojure.handler/api
+      ring.middleware.json/wrap-json-response
+      ring.middleware.json/wrap-json-params))
