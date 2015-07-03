@@ -8,8 +8,8 @@
 
 (defroutes app-routes
   (GET "/" [foo bar] (str foo " " bar))
+  (GET "/auth_callback" [code] (ig/token-and-user-from-code code))
   (GET "/auth" [] (redirect ig/auth-url))
-  (GET "/auth_callback" (str "code"))
   (route/resources "/")
   (route/not-found "<h1>Not found</h1>"))
 
